@@ -1,0 +1,142 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', 'Helvetica', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  background-color: #f8f9fa;
+  transition: background-color 0.3s ease;
+}
+
+body.dark-mode {
+  background-color: #1e1e1e;
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+  background-color: #f8f9fa;
+  transition: background-color 0.3s ease;
+}
+
+/* TipTap Editor Styles - Google Docs like */
+.ProseMirror {
+  outline: none;
+  min-height: 200px;
+  font-size: 11pt;
+  line-height: 1.5;
+  font-family: 'Arial', 'Helvetica', sans-serif;
+  color: #202124;
+  transition: color 0.3s ease;
+}
+
+body.dark-mode .ProseMirror {
+  color: #e0e0e0;
+}
+
+.ProseMirror p {
+  margin: 0;
+  padding: 0;
+  margin-bottom: 0.75em;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #80868b;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  font-style: italic;
+}
+
+.ProseMirror h1 {
+  font-size: 20pt;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-top: 0;
+  margin-bottom: 0.75em;
+  color: #202124;
+}
+
+.ProseMirror h2 {
+  font-size: 16pt;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-top: 0;
+  margin-bottom: 0.75em;
+  color: #202124;
+}
+
+.ProseMirror h3 {
+  font-size: 14pt;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-top: 0;
+  margin-bottom: 0.75em;
+  color: #202124;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 30px;
+  margin-bottom: 0.75em;
+}
+
+.ProseMirror li {
+  margin-bottom: 0.25em;
+}
+
+.ProseMirror strong {
+  font-weight: 700;
+}
+
+.ProseMirror em {
+  font-style: italic;
+}
+
+.ProseMirror s {
+  text-decoration: line-through;
+}
+
+/* Quill editor styles */
+.ql-container {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.ql-editor {
+  min-height: 400px;
+  padding: 20px;
+}
+
+/* Remote cursor styles */
+.remote-cursor {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.cursor-label {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  padding: 2px 6px;
+  color: white;
+  font-size: 12px;
+  border-radius: 3px;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.cursor-selection {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.3;
+}
+

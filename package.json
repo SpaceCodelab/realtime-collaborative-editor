@@ -1,0 +1,15 @@
+{
+  "name": "realtime-collaborative-editor",
+  "version": "1.0.0",
+  "description": "Real-time collaborative editor with Yjs and Socket.io",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "build": "npm run build --prefix backend && npm run build --prefix frontend",
+    "start": "npm run start --prefix backend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
+

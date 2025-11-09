@@ -1,0 +1,33 @@
+{
+  "name": "collaborative-editor-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tiptap/core": "^3.6.0",
+    "@tiptap/react": "^3.6.0",
+    "@tiptap/starter-kit": "^3.6.0",
+    "prosemirror-state": "^1.4.2",
+    "prosemirror-view": "^1.27.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.1",
+    "socket.io-client": "^4.7.2",
+    "uuid": "^9.0.1",
+    "y-prosemirror": "^1.0.5",
+    "yjs": "^13.6.27"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "@types/uuid": "^9.0.7",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.8"
+  }
+}
