@@ -1,60 +1,92 @@
-# Real-Time Collaborative Editor (Google-Docs-lite)
+# 🚀 Real-Time Collaborative Editor
 
-A production-ready real-time collaborative rich-text editor built with React, Yjs (CRDT), Socket.io, and Node.js. Multiple users can edit the same document simultaneously with live cursors, selections, and presence awareness.
+> A production-ready, Google Docs-like collaborative rich-text editor built with modern web technologies. Multiple users can edit documents simultaneously with live cursors, selections, and real-time synchronization.
 
-## Tech Stack
+![Tech Stack](https://img.shields.io/badge/React-18+-61DAFB?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.3+-3178C6?logo=typescript)
+![Yjs](https://img.shields.io/badge/Yjs-CRDT-FFD700)
+![Socket.io](https://img.shields.io/badge/Socket.io-4.7+-010101?logo=socket.io)
 
-- **Frontend**: React 18 + Vite + TypeScript, React-Quill, Yjs, y-protocols/awareness
-- **Backend**: Node.js + Express + TypeScript, Socket.io
-- **Real-time Sync**: Yjs (CRDT) for conflict-free document merging
-- **Transport**: Socket.io for WebSocket communication
-- **Persistence**: LevelDB (default) with option to switch to MongoDB
+---
 
-## Features
+## ✨ Features
 
-✅ **Real-time Collaboration**: Multiple users can edit simultaneously with automatic conflict resolution using Yjs CRDT  
-✅ **Live Cursors & Selections**: See other users' cursors and text selections in real-time with colored indicators  
-✅ **User Presence**: View list of connected users with colored avatars  
-✅ **Document Persistence**: Documents are automatically saved to LevelDB (or MongoDB)  
-✅ **Multiple Documents**: Support for multiple documents via URL routing (`/doc/:docId`)  
-✅ **Rich Text Editing**: Full-featured rich text editor with formatting options  
-✅ **Connection Status**: Visual indicators for connection state and last saved time  
+| Feature | Description |
+|---------|-------------|
+| 🔄 **Real-time Collaboration** | Multiple users can edit simultaneously with automatic conflict resolution using Yjs CRDT |
+| 👆 **Live Cursors & Selections** | See other users' cursors and text selections in real-time with colored indicators |
+| 👥 **User Presence** | View list of connected users with colored avatars and usernames |
+| 💾 **Document Persistence** | Documents are automatically saved to LevelDB (or MongoDB) |
+| 📄 **Multiple Documents** | Support for multiple documents via URL routing (`/doc/:docId`) |
+| ✏️ **Rich Text Editing** | Full-featured editor with formatting options (bold, italic, underline, colors, fonts, etc.) |
+| 🔌 **Connection Status** | Visual indicators for connection state and last saved time |
+| 🌙 **Dark Mode** | Beautiful dark mode support for comfortable editing |
 
-## Project Structure
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **React 18** + **Vite** + **TypeScript**
+- **TipTap** - Headless rich text editor framework
+- **Yjs** - CRDT for conflict-free document merging
+- **y-prosemirror** - Yjs integration with ProseMirror (TipTap's core)
+- **Socket.io Client** - WebSocket communication
+
+### Backend
+- **Node.js** + **Express** + **TypeScript**
+- **Socket.io** - WebSocket server
+- **Yjs** - Document synchronization
+- **LevelDB** - Document persistence (MongoDB option available)
+
+---
+
+## 📁 Project Structure
 
 ```
-├─ backend/
-│  ├─ src/
-│  │  ├─ server.ts          # Express + Socket.io server
-│  │  ├─ yjs-provider.ts    # Yjs document management & Socket.io bridging
-│  │  ├─ persistence.ts     # LevelDB persistence layer
-│  │  ├─ routes.ts          # REST API routes
-│  │  └─ types.ts           # TypeScript types
-│  ├─ package.json
-│  └─ tsconfig.json
-├─ frontend/
-│  ├─ src/
-│  │  ├─ main.tsx           # React entry point
-│  │  ├─ App.tsx            # Router setup
-│  │  ├─ EditorPage.tsx     # Main editor page
-│  │  ├─ components/
-│  │  │  ├─ RichEditor.tsx  # Quill editor with Yjs binding
-│  │  │  ├─ PresenceBar.tsx # User presence list
-│  │  │  └─ CursorOverlay.tsx # Remote cursor rendering
-│  │  └─ services/
-│  │     └─ socketProvider.ts # Socket.io + Yjs provider
-│  ├─ package.json
-│  └─ vite.config.ts
-├─ docker-compose.yml       # Docker setup (optional)
-└─ README.md
+realtime-collaborative-editor/
+├── backend/
+│   ├── src/
+│   │   ├── server.ts          # Express + Socket.io server
+│   │   ├── yjs-provider.ts    # Yjs document management & Socket.io bridging
+│   │   ├── persistence.ts     # LevelDB persistence layer
+│   │   ├── routes.ts          # REST API routes
+│   │   └── types.ts           # TypeScript types
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── frontend/
+│   ├── src/
+│   │   ├── main.tsx           # React entry point
+│   │   ├── App.tsx            # Router setup
+│   │   ├── EditorPage.tsx     # Main editor page
+│   │   ├── components/
+│   │   │   ├── RichEditor.tsx # TipTap editor with Yjs binding
+│   │   │   ├── Toolbar.tsx    # Rich text formatting toolbar
+│   │   │   └── PresenceBar.tsx # User presence list
+│   │   ├── extensions/
+│   │   │   ├── YjsExtension.ts # Yjs integration extension
+│   │   │   ├── FontSize.ts    # Custom font size extension
+│   │   │   └── FontFamily.ts  # Custom font family extension
+│   │   ├── services/
+│   │   │   └── socketProvider.ts # Socket.io + Yjs provider
+│   │   └── contexts/
+│   │       └── ThemeContext.tsx # Dark mode context
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── docker-compose.yml         # Docker setup (optional)
+└── README.md
 ```
 
-## Quick Start
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ and npm
-- (Optional) Docker and Docker Compose
+- **Node.js 18+** and **npm**
+- (Optional) **Docker** and **Docker Compose**
 
 ### Installation
 
@@ -62,6 +94,7 @@ A production-ready real-time collaborative rich-text editor built with React, Yj
    ```bash
    npm run install:all
    ```
+   
    Or manually:
    ```bash
    npm install
@@ -77,8 +110,8 @@ npm run dev
 ```
 
 This starts:
-- Backend server on `http://localhost:3001`
-- Frontend dev server on `http://localhost:3000`
+- **Backend server** on `http://localhost:3001`
+- **Frontend dev server** on `http://localhost:3000`
 
 **Option 2: Run separately**:
 
@@ -94,11 +127,13 @@ cd frontend
 npm run dev
 ```
 
-### Testing Multi-Client Editing
+---
+
+## 🧪 Testing Multi-Client Editing
 
 1. Start the dev server: `npm run dev`
 2. Open `http://localhost:3000` in your browser
-3. You'll be prompted for a username (or use saved one)
+3. Enter a username (or use saved one)
 4. A new document will be created automatically, or navigate to `/doc/:docId` for a specific document
 5. **Open the same URL in multiple browser tabs/windows** to test collaboration
 6. Type in one tab and see changes appear in real-time in other tabs
@@ -122,7 +157,9 @@ npm run dev
 # Cursors and selections should be visible with colored indicators
 ```
 
-## How It Works
+---
+
+## 🔧 How It Works
 
 ### Yjs CRDT Sync Protocol
 
@@ -137,7 +174,7 @@ npm run dev
 - Clients track their cursor position and selection in local awareness state
 - Awareness updates are sent to server via `awareness-update` event
 - Server broadcasts awareness updates to all clients in the document room
-- Frontend renders remote cursors as colored overlays on the editor
+- Frontend renders remote cursors using `yCursorPlugin` from y-prosemirror
 
 ### Persistence
 
@@ -146,7 +183,9 @@ npm run dev
 - On server start, persisted documents are loaded into memory
 - Documents are cleaned up from memory after 60 seconds of no clients (but remain persisted)
 
-## Switching to MongoDB
+---
+
+## 🔄 Switching to MongoDB
 
 To use MongoDB instead of LevelDB:
 
@@ -193,7 +232,9 @@ To use MongoDB instead of LevelDB:
 
 3. **Update `backend/src/server.ts`** to pass MongoDB connection string
 
-## Deployment
+---
+
+## 🚢 Deployment
 
 ### Production Build
 
@@ -205,10 +246,12 @@ This builds both frontend and backend. The backend will serve the frontend stati
 
 ### Environment Variables
 
-- `PORT`: Backend server port (default: 3001)
-- `FRONTEND_PORT`: Frontend port (default: 3000)
-- `NODE_ENV`: Set to `production` for production mode
-- `VITE_SOCKET_URL`: Frontend Socket.io URL (default: `http://localhost:3001`)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PORT` | Backend server port | `3001` |
+| `FRONTEND_PORT` | Frontend port | `3000` |
+| `NODE_ENV` | Set to `production` for production mode | `development` |
+| `VITE_SOCKET_URL` | Frontend Socket.io URL | `http://localhost:3001` |
 
 ### Docker Deployment
 
@@ -234,51 +277,67 @@ This starts both backend and frontend containers. Make sure to set `VITE_SOCKET_
 
 ### Vercel + Node Server
 
-- Frontend: Deploy to Vercel (static export)
-- Backend: Deploy to Railway, Render, or similar Node.js hosting
+- **Frontend**: Deploy to Vercel (static export)
+- **Backend**: Deploy to Railway, Render, or similar Node.js hosting
 - Update `VITE_SOCKET_URL` to point to your backend URL
 
-## API Endpoints
+---
 
-- `GET /api/doc/:docId` - Get document metadata
-- `POST /api/doc/:docId` - Create/update document metadata
-- `GET /api/health` - Health check
+## 📡 API Endpoints
 
-## Socket.io Events
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/doc/:docId` | Get document metadata |
+| `POST` | `/api/doc/:docId` | Create/update document metadata |
+| `GET` | `/api/health` | Health check |
 
-**Client → Server**:
-- `join-doc` - Join a document room
-- `sync-step2` - Send state vector for sync
-- `doc-update` - Send document update
-- `awareness-update` - Send awareness state
+---
 
-**Server → Client**:
-- `sync-step1` - Initial state vector
-- `sync-update` - Missing document updates
-- `doc-update` - Document update from another client
-- `awareness-update` - Awareness state from other clients
-- `user-joined` - User joined notification
-- `user-left` - User left notification
+## 🔌 Socket.io Events
 
-## Code Comments
+### Client → Server
+
+| Event | Description |
+|-------|-------------|
+| `join-doc` | Join a document room |
+| `sync-step2` | Send state vector for sync |
+| `doc-update` | Send document update |
+| `awareness-update` | Send awareness state |
+
+### Server → Client
+
+| Event | Description |
+|-------|-------------|
+| `sync-step1` | Initial state vector |
+| `sync-update` | Missing document updates |
+| `doc-update` | Document update from another client |
+| `awareness-update` | Awareness state from other clients |
+| `user-joined` | User joined notification |
+| `user-left` | User left notification |
+
+---
+
+## 🐛 Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| **Connection issues** | Check that backend is running on port 3001 and frontend can reach it |
+| **Cursors not showing** | Ensure awareness updates are being sent/received (check browser console) |
+| **Changes not syncing** | Verify Yjs document updates are being applied (check server logs) |
+| **Persistence not working** | Ensure `./data/` directory is writable |
+
+---
+
+## 📝 Code Comments
 
 Key implementation details are commented in:
 - `backend/src/yjs-provider.ts` - Yjs sync protocol and awareness handling
 - `frontend/src/services/socketProvider.ts` - Client-side Yjs provider
-- `frontend/src/components/CursorOverlay.tsx` - Remote cursor rendering
+- `frontend/src/extensions/YjsExtension.ts` - Yjs integration with TipTap
 
-## Troubleshooting
+---
 
-**Connection issues**: Check that backend is running on port 3001 and frontend can reach it  
-**Cursors not showing**: Ensure awareness updates are being sent/received (check browser console)  
-**Changes not syncing**: Verify Yjs document updates are being applied (check server logs)  
-**Persistence not working**: Ensure `./data/` directory is writable
-
-## License
-
-MIT
-
-## Alternative: Using y-websocket
+## 🔀 Alternative: Using y-websocket
 
 For a simpler setup, you could use the official `y-websocket` provider instead of the custom Socket.io provider. However, this implementation uses a custom provider for better control and Socket.io integration.
 
@@ -289,3 +348,20 @@ npm install y-websocket
 
 Then replace the Socket.io provider with `y-websocket` in the frontend.
 
+---
+
+## 📄 License
+
+MIT
+
+---
+
+## 🙏 Acknowledgments
+
+- [Yjs](https://github.com/yjs/yjs) - CRDT library for real-time collaboration
+- [TipTap](https://tiptap.dev/) - Headless rich text editor framework
+- [Socket.io](https://socket.io/) - Real-time bidirectional event-based communication
+
+---
+
+**Made with ❤️ for collaborative editing**

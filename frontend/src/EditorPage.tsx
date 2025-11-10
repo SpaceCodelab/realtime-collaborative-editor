@@ -29,6 +29,7 @@ export function EditorPage() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [wordCount, setWordCount] = useState<number>(0);
   const usernameInputRef = useRef<HTMLInputElement>(null);
+  const connectionCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!docId || docId === 'new') {
@@ -114,20 +115,51 @@ export function EditorPage() {
     // Initialize socket provider with the final username
     const provider = new SocketProvider(docId, finalUsername, color);
     
-    // Monitor connection status
-    const checkConnection = setInterval(() => {
+    // Monitor connection status with better state tracking
+    if (connectionCheckIntervalRef.current) {
+      clearInterval(connectionCheckIntervalRef.current);
+    }
+    
+    // Set initial status
+    setConnectionStatus(provider.isConnected() ? 'connected' : 'connecting');
+    
+    // Listen to socket events for real-time status updates
+    const updateConnectionStatus = () => {
       if (provider.isConnected()) {
         setConnectionStatus('connected');
         setLastSaved(new Date());
       } else {
         setConnectionStatus('disconnected');
       }
-    }, 1000);
+    };
+    
+    // Listen to custom socket events for immediate updates
+    const handleSocketConnected = () => {
+      setConnectionStatus('connected');
+      setLastSaved(new Date());
+    };
+    
+    const handleSocketDisconnected = () => {
+      setConnectionStatus('disconnected');
+    };
+    
+    window.addEventListener('socket-connected', handleSocketConnected);
+    window.addEventListener('socket-disconnected', handleSocketDisconnected);
+    window.addEventListener('socket-error', handleSocketDisconnected);
+    
+    // Poll connection status as backup (every 2 seconds to reduce overhead)
+    connectionCheckIntervalRef.current = setInterval(updateConnectionStatus, 2000);
 
     setSocketProvider(provider);
 
     return () => {
-      clearInterval(checkConnection);
+      if (connectionCheckIntervalRef.current) {
+        clearInterval(connectionCheckIntervalRef.current);
+        connectionCheckIntervalRef.current = null;
+      }
+      window.removeEventListener('socket-connected', handleSocketConnected);
+      window.removeEventListener('socket-disconnected', handleSocketDisconnected);
+      window.removeEventListener('socket-error', handleSocketDisconnected);
       provider.disconnect();
     };
   }, [docId, navigate, color]);
@@ -144,6 +176,36 @@ export function EditorPage() {
       setMetadata(data);
     } catch (error) {
       console.error('Error updating title:', error);
+    }
+  };
+
+  const handleUsernameChange = (newUsername: string) => {
+    if (!newUsername || newUsername.trim() === '') return;
+    const trimmedUsername = newUsername.trim();
+    setUsername(trimmedUsername);
+    localStorage.setItem('username', trimmedUsername);
+    
+    // Reconnect with new username if socket provider exists
+    if (socketProvider && docId) {
+      socketProvider.disconnect();
+      
+      // Clear old connection check interval
+      if (connectionCheckIntervalRef.current) {
+        clearInterval(connectionCheckIntervalRef.current);
+      }
+      
+      const newProvider = new SocketProvider(docId, trimmedUsername, color);
+      setSocketProvider(newProvider);
+      
+      // Monitor connection status for new provider
+      connectionCheckIntervalRef.current = setInterval(() => {
+        if (newProvider.isConnected()) {
+          setConnectionStatus('connected');
+          setLastSaved(new Date());
+        } else {
+          setConnectionStatus('disconnected');
+        }
+      }, 1000);
     }
   };
 
@@ -221,6 +283,55 @@ export function EditorPage() {
             onBlur={(e) => {
               e.target.style.backgroundColor = 'transparent';
             }}
+          />
+        </div>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '4px 12px',
+          backgroundColor: isDarkMode ? '#3d3d3d' : '#f1f3f4',
+          borderRadius: '20px',
+          border: `1px solid ${isDarkMode ? '#555' : '#dadce0'}`,
+        }}>
+          <div
+            style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: '50%',
+              backgroundColor: color,
+              border: '2px solid #fff',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+              flexShrink: 0,
+            }}
+          />
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => handleUsernameChange(e.target.value)}
+            onBlur={(e) => {
+              if (!e.target.value.trim()) {
+                e.target.value = username; // Restore if empty
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.currentTarget.blur();
+              }
+            }}
+            placeholder="Enter username"
+            style={{
+              fontSize: '13px',
+              fontWeight: 500,
+              border: 'none',
+              outline: 'none',
+              color: textColor,
+              backgroundColor: 'transparent',
+              padding: '2px 4px',
+              minWidth: '100px',
+              maxWidth: '150px',
+            }}
+            title="Click to change your username"
           />
         </div>
         <div style={{

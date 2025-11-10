@@ -1,10 +1,19 @@
 // frontend/src/components/RichEditor.tsx
-import React, { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { EditorState } from "prosemirror-state";
-import * as Y from "yjs";
-import { ySyncPlugin, yCursorPlugin, yUndoPlugin } from "y-prosemirror";
+import { TextStyle } from "@tiptap/extension-text-style";
+import { Color } from "@tiptap/extension-color";
+import Highlight from "@tiptap/extension-highlight";
+import Underline from "@tiptap/extension-underline";
+import TextAlign from "@tiptap/extension-text-align";
+import Link from "@tiptap/extension-link";
+import Blockquote from "@tiptap/extension-blockquote";
+import CodeBlock from "@tiptap/extension-code-block";
+import HorizontalRule from "@tiptap/extension-horizontal-rule";
+import { FontSize } from "../extensions/FontSize";
+import { FontFamily } from "../extensions/FontFamily";
+import { YjsExtension } from "../extensions/YjsExtension";
 import { Toolbar } from "./Toolbar";
 
 type Props = {
@@ -14,12 +23,50 @@ type Props = {
   onWordCountChange?: (count: number) => void;
 };
 
-function RichEditor({ socketProvider, docId, isDarkMode = false, onWordCountChange }: Props) {
+function RichEditor({ socketProvider, isDarkMode = false, onWordCountChange }: Props) {
   console.log('RichEditor: Rendering, socketProvider:', socketProvider);
   
+  const ydoc = socketProvider?.ydoc;
+  const awareness = socketProvider?.getAwareness();
+  
+  const hasYjs = !!(ydoc && awareness);
+  console.log('RichEditor: Yjs available?', hasYjs, 'ydoc:', !!ydoc, 'awareness:', !!awareness);
+  
   const editor = useEditor({ 
-    extensions: [StarterKit], 
-    content: "<p></p>",
+    extensions: [
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3],
+        },
+      }),
+      TextStyle,
+      FontSize,
+      FontFamily,
+      Color,
+      Highlight.configure({
+        multicolor: true,
+      }),
+      Underline,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'editor-link',
+        },
+      }),
+      Blockquote,
+      CodeBlock,
+      HorizontalRule,
+      // Add Yjs extension with proper configuration
+      ...(hasYjs ? [YjsExtension.configure({
+        ydoc: ydoc!,
+        awareness: awareness!,
+      })] : []),
+    ] as any, 
+    // Don't set content when using Yjs - ySyncPlugin will sync from Yjs document
+    content: hasYjs ? undefined : "<p></p>",
     editable: true,
     onUpdate: ({ editor }) => {
       if (onWordCountChange) {
@@ -28,47 +75,22 @@ function RichEditor({ socketProvider, docId, isDarkMode = false, onWordCountChan
         onWordCountChange(words.length);
       }
     },
-  });
+  }, [hasYjs]); // Recreate editor when Yjs availability changes
   
-  console.log('RichEditor: Editor created:', editor);
-  const initializedRef = useRef(false);
-
+  console.log('RichEditor: Editor created:', editor, 'hasYjs:', hasYjs);
+  
+  // Update Yjs extension when socketProvider changes
   useEffect(() => {
-    if (!editor || !socketProvider || initializedRef.current) return;
+    if (!editor || !ydoc || !awareness) return;
     
-    const ydoc: Y.Doc = socketProvider.ydoc;
-    const awareness = socketProvider.getAwareness();
-
-    if (!ydoc || !awareness) return;
-
-    initializedRef.current = true;
-
-    // prosemirror fragment name
-    const xmlFragment = ydoc.getXmlFragment("prosemirror");
-    const yjsPlugins = [
-      ySyncPlugin(xmlFragment),
-      yCursorPlugin(awareness),
-      yUndoPlugin()
-    ];
-
-    // Get the current editor view
+    // The extension should automatically pick up the new ydoc/awareness
+    // But we may need to force a re-render
     const view = (editor as any).view;
-    if (!view) return;
-
-    // Create new state with Yjs plugins
-    const currentState = view.state;
-    const newState = EditorState.create({
-      schema: currentState.schema,
-      plugins: [...currentState.plugins, ...yjsPlugins],
-    });
-
-    // Update the editor view with the new state
-    view.updateState(newState);
-
-    return () => {
-      // Cleanup if needed
-    };
-  }, [editor, socketProvider]);
+    if (view) {
+      // Trigger a state update to ensure plugins are using latest ydoc/awareness
+      view.dispatch(view.state.tr);
+    }
+  }, [editor, ydoc, awareness]);
 
   if (!editor) {
     console.log('RichEditor: Editor not ready yet');
