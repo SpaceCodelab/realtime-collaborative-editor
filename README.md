@@ -75,7 +75,6 @@ realtime-collaborative-editor/
 │   ├── package.json
 │   └── vite.config.ts
 │
-├── docker-compose.yml         # Docker setup (optional)
 └── README.md
 ```
 
@@ -86,7 +85,6 @@ realtime-collaborative-editor/
 ### Prerequisites
 
 - **Node.js 18+** and **npm**
-- (Optional) **Docker** and **Docker Compose**
 
 ### Installation
 
@@ -252,14 +250,6 @@ This builds both frontend and backend. The backend will serve the frontend stati
 | `FRONTEND_PORT` | Frontend port | `3000` |
 | `NODE_ENV` | Set to `production` for production mode | `development` |
 | `VITE_SOCKET_URL` | Frontend Socket.io URL | `http://localhost:3001` |
-
-### Docker Deployment
-
-```bash
-docker-compose up -d
-```
-
-This starts both backend and frontend containers. Make sure to set `VITE_SOCKET_URL` in `docker-compose.yml` to your backend URL.
 
 ### Heroku Deployment
 
