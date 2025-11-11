@@ -8,7 +8,48 @@ import { YjsSocketProvider } from './yjs-provider';
 import { createRoutes } from './routes';
 
 const PORT = process.env.PORT || 3001;
-const FRONTEND_PORT = process.env.FRONTEND_PORT || 3000;
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN;
+
+const DEFAULT_ALLOWED_ORIGINS = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+];
+
+const parseOrigins = (origins?: string | string[]) => {
+  if (!origins) return [];
+  if (Array.isArray(origins)) return origins;
+  return origins.split(',').map(origin => origin.trim()).filter(Boolean);
+};
+
+const configuredOrigins = parseOrigins(FRONTEND_ORIGIN);
+
+const isOriginAllowed = (origin: string | undefined): boolean => {
+  if (!origin) return true; // Allow non-browser clients (like curl)
+  if (configuredOrigins.length > 0) {
+    return configuredOrigins.includes(origin);
+  }
+  // Default development origins
+  const defaultAllowed = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:4173', // Vite preview
+    'http://127.0.0.1:4173',
+  ];
+  return defaultAllowed.includes(origin);
+};
+
+const originValidator = (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+  if (isOriginAllowed(origin)) {
+    callback(null, true);
+  } else {
+    console.warn(`CORS: blocked origin ${origin}`);
+    callback(new Error('Not allowed by CORS'));
+  }
+};
 
 const app = express();
 const httpServer = createServer(app);
@@ -16,7 +57,7 @@ const httpServer = createServer(app);
 // Socket.io setup with CORS
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: `http://localhost:${FRONTEND_PORT}`,
+    origin: originValidator,
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -24,7 +65,7 @@ const io = new SocketIOServer(httpServer, {
 
 // Middleware
 app.use(cors({
-  origin: `http://localhost:${FRONTEND_PORT}`,
+  origin: originValidator,
   credentials: true,
 }));
 app.use(express.json());
